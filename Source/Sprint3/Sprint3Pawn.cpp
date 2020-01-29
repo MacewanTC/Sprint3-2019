@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Sprint3Pawn.h"
+#include "FighterAnimInstance.h"
 #include "Components/InputComponent.h"
 
 // Sets default values
@@ -15,6 +16,8 @@ ASprint3Pawn::ASprint3Pawn()
 void ASprint3Pawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//Create Move Result Table
 
 	MoveTable.Add(TPair<EMovesEnum, EMovesEnum>(EMovesEnum::ME_HIGH_ATTACK, EMovesEnum::ME_HIGH_ATTACK), TPair<int, int>(-1, -1));
 	MoveTable.Add(TPair<EMovesEnum, EMovesEnum>(EMovesEnum::ME_LOW_ATTACK, EMovesEnum::ME_HIGH_ATTACK), TPair<int, int>(-1, -1));

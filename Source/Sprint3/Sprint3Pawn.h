@@ -27,9 +27,6 @@ protected:
 
 	int ypos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<EMovesEnum> Moves;
-
 	TMap<TPair<EMovesEnum, EMovesEnum>, TPair<int, int>> MoveTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -37,8 +34,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Multiplier;
 
-	bool Lock;
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UFighterAnimInstance* FighterAnimation;
+
+	bool Lock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EMovesEnum> Moves;
+
 	// Sets default values for this pawn's properties
 	ASprint3Pawn();
 
