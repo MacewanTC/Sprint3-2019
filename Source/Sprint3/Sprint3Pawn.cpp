@@ -60,8 +60,7 @@ void ASprint3Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis(XAxisAction, this, &ASprint3Pawn::ScrollX);
-	PlayerInputComponent->BindAxis(YAxisAction, this, &ASprint3Pawn::ScrollY);
-
+	PlayerInputComponent->BindAxis(ShiftAction, this, &ASprint3Pawn::ScrollY);
 }
 
 void ASprint3Pawn::ScrollX(float AxisValue)
