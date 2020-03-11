@@ -79,22 +79,22 @@ void ASprint3Pawn::UpdateActionAim()
 		{
 			if (ActionAim.Y > 0.f)
 			{
-				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_HIGH_ATTACK : EMovesEnum::ME_HIGH_BLOCK;
+				Moves[ActionIndex] = playerNum == 0 ? EMovesEnum::ME_HIGH_ATTACK : EMovesEnum::ME_HIGH_BLOCK;
 			}
 			else
 			{
-				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_LOW_ATTACK : EMovesEnum::ME_LOW_BLOCK;
+				Moves[ActionIndex] = playerNum == 0 ? EMovesEnum::ME_LOW_ATTACK : EMovesEnum::ME_LOW_BLOCK;
 			}
 		}
 		else
 		{
 			if (ActionAim.Y > 0.f)
 			{
-				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_HIGH_BLOCK : EMovesEnum::ME_HIGH_ATTACK;
+				Moves[ActionIndex] = playerNum == 0 ? EMovesEnum::ME_HIGH_BLOCK : EMovesEnum::ME_HIGH_ATTACK;
 			}
 			else
 			{
-				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_LOW_BLOCK : EMovesEnum::ME_LOW_ATTACK;
+				Moves[ActionIndex] = playerNum == 0 ? EMovesEnum::ME_LOW_BLOCK : EMovesEnum::ME_LOW_ATTACK;
 			}
 		}
 
@@ -114,7 +114,7 @@ void ASprint3Pawn::AimActionY(float AxisValue)
 
 void ASprint3Pawn::TauntAction()
 {
-	Moves[ypos] = EMovesEnum::ME_TAUNT;
+	Moves[ActionIndex] = EMovesEnum::ME_TAUNT;
 }
 
 void ASprint3Pawn::HighAttackAction()
@@ -164,9 +164,9 @@ void ASprint3Pawn::ShiftAction(float AxisValue)
 	//UE_LOG(LogTemp, Warning, TEXT("%i"), Moves.Num());
 	if (YAxisReset)
 	{
-		ypos = (ypos - FMath::RoundToInt(FMath::Clamp(AxisValue, -1.0f, 1.0f))) % 5;
-		if (ypos < 0)
-			ypos += 5;
+		ActionIndex = (ActionIndex - FMath::RoundToInt(FMath::Clamp(AxisValue, -1.0f, 1.0f))) % 5;
+		if (ActionIndex < 0)
+			ActionIndex += 5;
 	}
 	if (FMath::Abs(AxisValue) >= 0.7)
 	{

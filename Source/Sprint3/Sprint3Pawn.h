@@ -25,7 +25,7 @@ class SPRINT3_API ASprint3Pawn : public APawn
 protected:
 	friend class ASprint3GameModeBase;
 
-	int ypos;
+	
 
 	TMap<TPair<EMovesEnum, EMovesEnum>, TPair<int, int>> MoveTable;
 
@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<EMovesEnum> Moves;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ActionIndex;
+
 	// Sets default values for this pawn's properties
 	ASprint3Pawn();
 
@@ -56,12 +59,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		FName YAxisAction;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FVector2D ActionAim;
 
 	UPROPERTY(EditAnywhere)
 		int playerNum;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float ActionAimAngle;
 
 	bool YAxisReset;
