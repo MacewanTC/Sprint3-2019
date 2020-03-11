@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Sprint3Pawn.h"
-#include "FighterAnimInstance.h"
+#include "FighterAnimInstance.generated.h"
+
 
 UENUM(BlueprintType)
 enum class EAnimEnum : uint8

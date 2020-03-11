@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FighterPawn.h"
-
+#include "Components/InputComponent.h"
 
 // Sets default values
 AFighterPawn::AFighterPawn()
@@ -29,6 +29,8 @@ void AFighterPawn::Tick(float DeltaTime)
 void AFighterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	check(PlayerInputComponent);
+
 
 }
 

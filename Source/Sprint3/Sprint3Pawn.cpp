@@ -2,14 +2,15 @@
 
 #include "Sprint3Pawn.h"
 #include "FighterAnimInstance.h"
+#include "Math/Vector2D.h"
 #include "Components/InputComponent.h"
 
 // Sets default values
 ASprint3Pawn::ASprint3Pawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	XAxisReset = YAxisReset = true;
+	YAxisReset = true;
 }
 
 // Called when the game starts or when spawned
@@ -52,43 +53,112 @@ void ASprint3Pawn::BeginPlay()
 void ASprint3Pawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateActionAim();
 }
 
 // Called to bind functionality to input
 void ASprint3Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis(XAxisAction, this, &ASprint3Pawn::ScrollX);
-	PlayerInputComponent->BindAxis(ShiftAction, this, &ASprint3Pawn::ScrollY);
+	PlayerInputComponent->BindAxis("AimActionX", this, &ASprint3Pawn::AimActionX);
+	PlayerInputComponent->BindAxis("AimActionY", this, &ASprint3Pawn::AimActionY);
+	PlayerInputComponent->BindAxis("ShiftAction", this, &ASprint3Pawn::ShiftAction);
+
+	PlayerInputComponent->BindAction("TauntAction", EInputEvent::IE_Pressed, this, &ASprint3Pawn::TauntAction);
+	PlayerInputComponent->BindAction("HighAttack", EInputEvent::IE_Pressed, this, &ASprint3Pawn::HighAttackAction);
+	PlayerInputComponent->BindAction("LowAttack", EInputEvent::IE_Pressed, this, &ASprint3Pawn::LowAttackAction);
+	PlayerInputComponent->BindAction("HighBlock", EInputEvent::IE_Pressed, this, &ASprint3Pawn::HighBlockAction);
+	PlayerInputComponent->BindAction("LowBlock", EInputEvent::IE_Pressed, this, &ASprint3Pawn::LowBlockAction);
 }
 
-void ASprint3Pawn::ScrollX(float AxisValue)
+void ASprint3Pawn::UpdateActionAim()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("XPOS %i"), (int)Moves[ypos]);
-	//UE_LOG(LogTemp, Warning, TEXT("%i"), (int)EMovesEnum::ME_LAST_ITEM);
-	if (XAxisReset)
+	if (FMath::Sqrt((ActionAim.X * ActionAim.X) + (ActionAim.Y * ActionAim.Y)) >= 0.5f)
 	{
-		int tmp = (int)Moves[ypos];
-		tmp = ((tmp + FMath::RoundToInt(FMath::Clamp(AxisValue, -1.0f, 1.0f))) % (int)EMovesEnum::ME_LAST_ITEM);
-		if (tmp < 0)
-			tmp += (int)EMovesEnum::ME_LAST_ITEM;
-		Moves[ypos] = static_cast<EMovesEnum>(tmp);
-	}
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), FMath::Abs(AxisValue));
-	if (FMath::Abs(AxisValue) >= 0.7)
-	{
-		XAxisReset = false;
-		//UE_LOG(LogTemp, Warning, TEXT("Reset"));
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("ResetX"));
-		XAxisReset = true;
+		if (ActionAim.X > 0.f)
+		{
+			if (ActionAim.Y > 0.f)
+			{
+				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_HIGH_ATTACK : EMovesEnum::ME_HIGH_BLOCK;
+			}
+			else
+			{
+				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_LOW_ATTACK : EMovesEnum::ME_LOW_BLOCK;
+			}
+		}
+		else
+		{
+			if (ActionAim.Y > 0.f)
+			{
+				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_HIGH_BLOCK : EMovesEnum::ME_HIGH_ATTACK;
+			}
+			else
+			{
+				Moves[ypos] = playerNum == 0 ? EMovesEnum::ME_LOW_BLOCK : EMovesEnum::ME_LOW_ATTACK;
+			}
+		}
+
+		ActionAimAngle = FMath::RadiansToDegrees(FMath::Atan2(ActionAim.Y, ActionAim.X));
 	}
 }
 
-void ASprint3Pawn::ScrollY(float AxisValue)
+void ASprint3Pawn::AimActionX(float AxisValue)
+{
+	ActionAim.X = AxisValue;
+}
+
+void ASprint3Pawn::AimActionY(float AxisValue)
+{
+	ActionAim.Y = AxisValue;
+}
+
+void ASprint3Pawn::TauntAction()
+{
+	Moves[ypos] = EMovesEnum::ME_TAUNT;
+}
+
+void ASprint3Pawn::HighAttackAction()
+{
+}
+
+//void ASprint3Pawn::ScrollX(float AxisValue)
+//{
+//	//UE_LOG(LogTemp, Warning, TEXT("XPOS %i"), (int)Moves[ypos]);
+//	//UE_LOG(LogTemp, Warning, TEXT("%i"), (int)EMovesEnum::ME_LAST_ITEM);
+//	if (XAxisReset)
+//	{
+//		int tmp = (int)Moves[ypos];
+//		tmp = ((tmp + FMath::RoundToInt(FMath::Clamp(AxisValue, -1.0f, 1.0f))) % (int)EMovesEnum::ME_LAST_ITEM);
+//		if (tmp < 0)
+//			tmp += (int)EMovesEnum::ME_LAST_ITEM;
+//		Moves[ypos] = static_cast<EMovesEnum>(tmp);
+//	}
+//	//UE_LOG(LogTemp, Warning, TEXT("%f"), FMath::Abs(AxisValue));
+//	if (FMath::Abs(AxisValue) >= 0.7)
+//	{
+//		XAxisReset = false;
+//		//UE_LOG(LogTemp, Warning, TEXT("Reset"));
+//	}
+//	else
+//	{
+//		//UE_LOG(LogTemp, Warning, TEXT("ResetX"));
+//		XAxisReset = true;
+//	}
+//}
+
+void ASprint3Pawn::LowAttackAction()
+{
+}
+
+void ASprint3Pawn::HighBlockAction()
+{
+}
+
+void ASprint3Pawn::LowBlockAction()
+{
+}
+
+void ASprint3Pawn::ShiftAction(float AxisValue)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("YPOS %i"), ypos);
 	//UE_LOG(LogTemp, Warning, TEXT("%i"), Moves.Num());
@@ -103,7 +173,7 @@ void ASprint3Pawn::ScrollY(float AxisValue)
 		YAxisReset = false;
 		//UE_LOG(LogTemp, Warning, TEXT("Y"));
 	}
-	else 
+	else
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("ResetY"));
 		YAxisReset = true;
@@ -143,7 +213,7 @@ void ASprint3Pawn::ShuffleMovesArray()
 	}
 }
 
-TPair<int,int> ASprint3Pawn::CalculateMoveDeltas(EMovesEnum Self, EMovesEnum Other)
+TPair<int, int> ASprint3Pawn::CalculateMoveDeltas(EMovesEnum Self, EMovesEnum Other)
 {
 	return MoveTable[TPair<EMovesEnum, EMovesEnum>(Self, Other)];
 }

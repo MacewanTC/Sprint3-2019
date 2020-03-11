@@ -1,3 +1,4 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
@@ -22,6 +23,7 @@ UCLASS()
 class SPRINT3_API ASprint3GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
 public:
 
 	ASprint3GameModeBase();
