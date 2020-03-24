@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Sprint3Pawn.h"
+#include "SelectorWidget.h"
+
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h" 
-
 // Sets default values
 ASprint3Pawn::ASprint3Pawn()
 {
@@ -47,7 +48,6 @@ void ASprint3Pawn::BeginPlay()
 	MoveTable.Add(TPair<EMovesEnum, EMovesEnum>(EMovesEnum::ME_LOW_BLOCK, EMovesEnum::ME_TAUNT), TPair<int, int>(0, 0));
 	MoveTable.Add(TPair<EMovesEnum, EMovesEnum>(EMovesEnum::ME_TAUNT, EMovesEnum::ME_TAUNT), TPair<int, int>(0, 2));
 
-	ShuffleMovesArray();
 }
 
 // Called every frame
@@ -68,6 +68,9 @@ void ASprint3Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ASprint3Pawn::ScrollX(float AxisValue)
 {
+	if (Lock)
+		return;
+
 	//UE_LOG(LogTemp, Warning, TEXT("XPOS %i"), (int)Moves[ypos]);
 	//UE_LOG(LogTemp, Warning, TEXT("%i"), (int)EMovesEnum::ME_LAST_ITEM);
 	if (XAxisReset)
@@ -77,6 +80,17 @@ void ASprint3Pawn::ScrollX(float AxisValue)
 		if (tmp < 0)
 			tmp += (int)EMovesEnum::ME_LAST_ITEM;
 		Moves[ypos] = static_cast<EMovesEnum>(tmp);
+
+		if (AxisValue > 0.7)
+		{
+			if (!InputWidgets[ypos]->IsPlayingAnimation())
+				InputWidgets[ypos]->PlayAnimation(ShiftRight);
+		}
+		else if (AxisValue < -0.7)
+		{
+			if (!InputWidgets[ypos]->IsPlayingAnimation())
+				InputWidgets[ypos]->PlayAnimation(ShiftLeft);
+		}
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), FMath::Abs(AxisValue));
 	if (FMath::Abs(AxisValue) >= 0.7)
@@ -93,6 +107,11 @@ void ASprint3Pawn::ScrollX(float AxisValue)
 
 void ASprint3Pawn::ScrollY(float AxisValue)
 {
+	if (Lock)
+		return;
+
+	Cast<USelectorWidget>(InputWidgets[ypos])->SetCurrentlySelected(false);
+
 	//UE_LOG(LogTemp, Warning, TEXT("YPOS %i"), ypos);
 	//UE_LOG(LogTemp, Warning, TEXT("%i"), Moves.Num());
 	if (YAxisReset)
@@ -111,6 +130,8 @@ void ASprint3Pawn::ScrollY(float AxisValue)
 		//UE_LOG(LogTemp, Warning, TEXT("ResetY"));
 		YAxisReset = true;
 	}
+
+	Cast<USelectorWidget>(InputWidgets[ypos])->SetCurrentlySelected(true);
 }
 
 void ASprint3Pawn::ChangeHealth(int DeltaHealth)
@@ -143,6 +164,8 @@ void ASprint3Pawn::ShuffleMovesArray()
 	for (int i = 0; i < 5; ++i)
 	{
 		Moves[i] = static_cast<EMovesEnum>(FMath::RandRange(0, (int)EMovesEnum::ME_LAST_ITEM - 1));
+		Cast<USelectorWidget>(InputWidgets[i])->CurrentMoveIndex = static_cast<int>(Moves[i]);
+		Cast<USelectorWidget>(InputWidgets[i])->UpdateMoveImages();
 	}
 }
 

@@ -40,6 +40,17 @@ public:
 
 	TArray<FName> MoveNames = { "AttackHigh", "AttackLow", "BlockHigh", "BlockLow", "Taunt" };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<class UUserWidget> wMainMenu;
+
+	UUserWidget* MyMainMenu;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	class UWidgetAnimation* ShiftLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	class UWidgetAnimation* ShiftRight;
+
 public:
 
 	void BeginPlay() override;

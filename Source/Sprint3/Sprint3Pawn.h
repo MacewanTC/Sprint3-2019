@@ -48,6 +48,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enum)
 	EMovesEnum MovesEnum;
 
+	TArray<class UUserWidget*> InputWidgets;
+	class UWidgetAnimation* ShiftLeft;
+	class UWidgetAnimation* ShiftRight;
+
 	UPROPERTY(EditAnywhere)
 	FName XAxisAction;
 
