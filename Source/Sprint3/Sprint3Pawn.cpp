@@ -166,6 +166,7 @@ void ASprint3Pawn::ShuffleMovesArray()
 		Moves[i] = static_cast<EMovesEnum>(FMath::RandRange(0, (int)EMovesEnum::ME_LAST_ITEM - 1));
 		Cast<USelectorWidget>(InputWidgets[i])->CurrentMoveIndex = static_cast<int>(Moves[i]);
 		Cast<USelectorWidget>(InputWidgets[i])->UpdateMoveImages();
+		Cast<USelectorWidget>(InputWidgets[i])->HideLeftAndRight(false);
 	}
 }
 

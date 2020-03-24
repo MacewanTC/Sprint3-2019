@@ -136,14 +136,20 @@ void ASprint3GameModeBase::EvaluateMove()
 	{
 		if (i == j)
 		{
-			Cast<USelectorWidget>(Player1->InputWidgets[j])->SetCurrentlySelected(true);
-			Cast<USelectorWidget>(Player2->InputWidgets[j])->SetCurrentlySelected(true);
-		}
-		else
-		{
+			Cast<USelectorWidget>(Player1->InputWidgets[j])->SetEvaluationCurrentlySelected(true);
+			Cast<USelectorWidget>(Player2->InputWidgets[j])->SetEvaluationCurrentlySelected(true);
 			Cast<USelectorWidget>(Player1->InputWidgets[j])->SetCurrentlySelected(false);
 			Cast<USelectorWidget>(Player2->InputWidgets[j])->SetCurrentlySelected(false);
 		}
+		else
+		{
+			Cast<USelectorWidget>(Player1->InputWidgets[j])->SetEvaluationCurrentlySelected(false);
+			Cast<USelectorWidget>(Player2->InputWidgets[j])->SetEvaluationCurrentlySelected(false);
+			Cast<USelectorWidget>(Player1->InputWidgets[j])->SetCurrentlySelected(false);
+			Cast<USelectorWidget>(Player2->InputWidgets[j])->SetCurrentlySelected(false);
+		}
+		Cast<USelectorWidget>(Player1->InputWidgets[j])->HideLeftAndRight(true);
+		Cast<USelectorWidget>(Player2->InputWidgets[j])->HideLeftAndRight(true);
 	}
 	// for (int i = 0; i < 5; i++) 
 	if (i < 5)

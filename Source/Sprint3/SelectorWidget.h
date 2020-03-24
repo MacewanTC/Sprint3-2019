@@ -27,4 +27,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
 	void SetCurrentlySelected(bool Selected);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void SetEvaluationCurrentlySelected(bool Selected);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void HideLeftAndRight(bool ShouldHide);
+
 };
