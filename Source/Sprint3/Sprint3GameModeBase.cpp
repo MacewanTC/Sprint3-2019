@@ -3,21 +3,13 @@
 #include "Sprint3GameModeBase.h"
 #include "TimerManager.h" 
 #include "Kismet/GameplayStatics.h" 
+#include "Components/SkeletalMeshComponent.h" 
+#include "Animation/AnimInstance.h" 
 
-ASprint3GameModeBase::ASprint3GameModeBase()
-{
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	TimerDelegate.BindUFunction(this, FName("EvaluateMoves"));
-}
 
 void ASprint3GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	//GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.f, true);
-
-	GetWorldTimerManager().SetTimer(TimerHandle, [=]() { this->EvaluateMoves(); }, 10.f, true, 10.f);
 
 	TArray<AActor *> PlayerPawns;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASprint3Pawn::StaticClass(), PlayerPawns);
@@ -31,30 +23,85 @@ void ASprint3GameModeBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Create Pawns!"));
 	}
-}
 
-void ASprint3GameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
-{
-	AGameModeBase::InitGame(MapName, Options, ErrorMessage);
+	SetInputTimer();
 }
 
 
-void ASprint3GameModeBase::EvaluateMoves()
+void ASprint3GameModeBase::SetInputTimer()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Evaluating Moves"));
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]() { this->StartEvaluateMoves(); }, InputTime, false, InputTime);
+}
+
+void ASprint3GameModeBase::StartEvaluateMoves()
+{
 	Player1->ToggleLock();
 	Player2->ToggleLock();
 
-	for (int i = 0; i < 5; ++i)
+	this->CurrentEvaluatedMove = 0;
+	this->EvaluateMove(); 
+}
+
+/* Sorry this and OnMoveAnimationEnd form a loop that starts from StartEvaluateMoves
+ * and ends with EndEvalueMoves 
+ * TODO: Either do this properly with coroutines (this was written before C++20)
+ * or make a statemachine and cry
+*/
+void ASprint3GameModeBase::EvaluateMove()
+{
+	int i = CurrentEvaluatedMove;
+
+	// for (int i = 0; i < 5; i++) 
+	if (i < 5)
 	{
+		auto Skeleton = Player1->FindComponentByClass<USkeletalMeshComponent>();
+		auto AnimationInstance = Skeleton->GetAnimInstance();
+		AnimationInstance->Montage_Play(MovesMontage);
+		AnimationInstance->Montage_JumpToSection(MoveNames[static_cast<int>(Player1->Moves[i])], MovesMontage);
+		auto EndDelagate = FOnMontageEnded::CreateUObject(this, &ASprint3GameModeBase::OnMoveAnimationEnd);
+		AnimationInstance->Montage_SetEndDelegate(EndDelagate);
+
+		Skeleton = Player2->FindComponentByClass<USkeletalMeshComponent>();
+		AnimationInstance = Skeleton->GetAnimInstance();
+		AnimationInstance->Montage_Play(MovesMontage);
+		AnimationInstance->Montage_JumpToSection(MoveNames[static_cast<int>(Player2->Moves[i])], MovesMontage);
+		AnimationInstance->Montage_SetEndDelegate(EndDelagate);
+
+		// yeild;
+	}
+	else
+	{
+		EndEvaluateMoves();
+	}
+}
+
+// Check EvaluteMove comment
+void ASprint3GameModeBase::OnMoveAnimationEnd(UAnimMontage*, bool)
+{
+	UE_LOG(LogTemp, Warning, TEXT("HERE"));
+	static bool OtherPlayersCompleted = false;
+	if (!OtherPlayersCompleted)
+	{
+		OtherPlayersCompleted = true;
+	}
+	else
+	{
+		int i = CurrentEvaluatedMove;
 		auto p1 = Player1->CalculateMoveDeltas(Player1->Moves[i], Player2->Moves[i]);
 		auto p2 = Player2->CalculateMoveDeltas(Player2->Moves[i], Player1->Moves[i]);
 		Player1->ChangeHealth(p1.Key * Player2->Multiplier);
 		Player2->ChangeHealth(p2.Key * Player1->Multiplier);
 		Player1->ChangeMultiplier(p1.Value);
 		Player2->ChangeMultiplier(p2.Value);
-	}
+		OtherPlayersCompleted = false;
 
+		CurrentEvaluatedMove++;
+		EvaluateMove();
+	}
+}
+
+void ASprint3GameModeBase::EndEvaluateMoves()
+{
 	Player1->ShuffleMovesArray();
 	Player2->ShuffleMovesArray();
 
@@ -68,6 +115,8 @@ void ASprint3GameModeBase::EvaluateMoves()
 
 	Player1->ToggleLock();
 	Player2->ToggleLock();
+
+	SetInputTimer();
 }
 
 void ASprint3GameModeBase::FinishGame(EVictoryEnum Winner)

@@ -22,26 +22,41 @@ UCLASS()
 class SPRINT3_API ASprint3GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-public:
-
-	ASprint3GameModeBase();
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 protected:
-	UFUNCTION()
-	virtual void EvaluateMoves();
-
-	virtual void FinishGame(EVictoryEnum Winner);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ASprint3Pawn* Player1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ASprint3Pawn* Player2;
+
+	float InputTime = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
+
+	int CurrentEvaluatedMove;
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UAnimMontage* MovesMontage;
+
+	TArray<FName> MoveNames = { "AttackHigh", "AttackLow", "BlockHigh", "BlockLow", "Taunt" };
+
+public:
+
+	void BeginPlay() override;
+
+protected:
+
+	void SetInputTimer();
+
+	void StartEvaluateMoves();
+
+	void EvaluateMove();
+
+	void OnMoveAnimationEnd(UAnimMontage* = nullptr, bool = false);
+
+	void EndEvaluateMoves();
+
+	void FinishGame(EVictoryEnum Winner);
+
+
 };

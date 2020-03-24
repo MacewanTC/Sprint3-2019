@@ -9,7 +9,7 @@
 UENUM(BlueprintType)
 enum class EMovesEnum : uint8
 {
-	ME_HIGH_ATTACK UMETA(DisplayName="HighAttack"),
+	ME_HIGH_ATTACK = 0 UMETA(DisplayName="HighAttack"),
 	ME_LOW_ATTACK UMETA(DisplayName="LowAttack"),
 	ME_HIGH_BLOCK UMETA(DisplayName="HighBlock"),
 	ME_LOW_BLOCK UMETA(DisplayName="LowBlock"),
@@ -21,6 +21,9 @@ UCLASS()
 class SPRINT3_API ASprint3Pawn : public APawn
 {
 	GENERATED_BODY()
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	class USkeletalMeshComponent* Mesh;
+
 
 protected:
 	friend class ASprint3GameModeBase;

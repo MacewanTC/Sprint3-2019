@@ -2,6 +2,7 @@
 
 #include "Sprint3Pawn.h"
 #include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h" 
 
 // Sets default values
 ASprint3Pawn::ASprint3Pawn()
@@ -9,6 +10,10 @@ ASprint3Pawn::ASprint3Pawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	XAxisReset = YAxisReset = true;
+
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh"));
+	Mesh->InitAnim(false);
+	RootComponent = Mesh;
 }
 
 // Called when the game starts or when spawned
